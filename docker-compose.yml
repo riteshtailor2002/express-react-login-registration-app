@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mysqldb:
+    image: mariadb:10.5
+    restart: always
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+    volumes:
+      - ./database:/var/lib/mysql    
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    env_file: ./.env
+    depends_on:
+      - mysqldb
+    ports:
+      - "8088:80"
+    environment:
+      - PMA_HOST=mysqldb
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - UPLOAD_LIMIT=300M 
+    
