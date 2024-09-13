@@ -1,9 +1,13 @@
-module.exports = (db) => {
-    const express = require('express');
-    const router = express.Router();
+module.exports = (db, router) => {    
     const AuthController = require('../controllers/auth.controller');
-    const AuthModels = require('../models/index')(db);
-    router.get('/', (req, res) => AuthController.home(req, res, AuthModels));
-    router.get('/welcome', (req, res) => AuthController.welcome(req, res, AuthModels));
+    const dbObject = require('../models/index')(db);
+    const middlewareObject = require('../../../middleware/index');
+    const { verifySignUp, authJwt } = middlewareObject(dbObject);  // Pass dbObject to middleware
+    /* Post request to sign up user */
+    router.post('/signup', [
+        verifySignUp.checkDuplicateUsernameOrEmail(dbObject),
+        verifySignUp.checkRolesExisted(dbObject),
+    ], (req, res) => AuthController.signup(req, res, dbObject));
+    router.get('/welcome', (req, res) => AuthController.welcome(req, res, dbObject));
     return router;
 };

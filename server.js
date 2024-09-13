@@ -34,8 +34,8 @@ app.use(
 );
 
 
-// controller routes
-const authRoute = require(path.join(__dirname, 'app/src/auth/routes/index'))(db);
+// module routes and sending db and router as a dependency injection
+const authRoute = require(path.join(__dirname, 'app/src/auth/routes/index'))(db, router);
 app.use('/auth', authRoute);
 
 
